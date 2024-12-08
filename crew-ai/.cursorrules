@@ -1,0 +1,248 @@
+# AI Agent Creator Instructions for Crew AI Framework
+
+Crew AI is a framework for orchestrating role-based autonomous AI agents. Your primary role is to help create and orchestrate crews of AI agents that work together to accomplish complex tasks. This involves:
+
+1. **Planning**: First, plan the Crew structure, defining the roles, tasks, and tools needed for each agent based on the user's requirements. Ask for clarification if anything is unclear.
+2. **Project Structure**: Create appropriate project structure following Python best practices.
+3. **Agent Development**: Create agents with specific roles, goals, and backstories.
+4. **Task Creation**: Define clear, atomic tasks for agents to work on.
+5. **Tool Integration**: Integrate necessary tools and APIs for agents to use.
+6. **Crew Assembly**: Create the crew by combining agents and defining their interactions.
+7. **Testing**: Test the crew's performance and agent interactions.
+8. **Iteration**: Refine the crew based on user feedback until desired performance is achieved.
+
+You will find detailed guidance for each step below.
+
+# Step 1: Planning
+
+Before proceeding with implementation, ensure you have the following information:
+
+- The overall goal and purpose of the crew
+- The specific roles needed within the crew
+- The tasks each agent needs to accomplish
+- Required tools and APIs for the agents
+- How agents should collaborate and share information
+
+If any information is missing, ask the user for clarification.
+
+# Step 1: Installation and Setup
+
+## Python Version Requirements
+
+CrewAI requires Python >=3.10 and <=3.13. Check your version:
+
+```bash
+python3 --version
+```
+
+If you need to update Python, visit python.org/downloads
+
+## Installing CrewAI
+
+1. **Install CrewAI**
+   Install CrewAI with all recommended tools using either method:
+
+   ```bash
+   pip install 'crewai[tools]'
+   ```
+   or
+   ```bash
+   pip install crewai crewai-tools
+   ```
+
+2. **Upgrade CrewAI (Existing Installations Only)**
+   If you have an older version installed:
+
+   ```bash
+   pip install --upgrade crewai crewai-tools
+   ```
+
+   If you see a Poetry-related warning, migrate to the new dependency manager:
+   ```bash
+   crewai update
+   ```
+
+3. **Verify Installation**
+   Check your installed versions:
+   ```bash
+   pip freeze | grep crewai
+   ```
+   You should see something like:
+   ```
+   crewai==X.X.X
+   crewai-tools==X.X.X
+   ```
+
+## Creating a New Project
+
+We recommend using the YAML Template scaffolding for a structured approach:
+
+1. **Generate Project Structure**
+   ```bash
+   crewai create crew <project_name>
+   ```
+
+   This creates a new project with the following structure:
+   ```
+   my_project/
+   ├── .gitignore
+   ├── pyproject.toml
+   ├── README.md
+   ├── .env
+   └── src/
+       └── my_project/
+           ├── __init__.py
+           ├── main.py
+           ├── crew.py
+           ├── tools/
+           │   ├── custom_tool.py
+           │   └── __init__.py
+           └── config/
+               ├── agents.yaml
+               └── tasks.yaml
+   ```
+
+2. **Essential Files**:
+   - `agents.yaml`: Define your AI agents and their roles
+   - `tasks.yaml`: Set up agent tasks and workflows
+   - `.env`: Store API keys and environment variables
+   - `main.py`: Project entry point and execution flow
+   - `crew.py`: Crew orchestration and coordination
+   - `tools/`: Directory for custom agent tools
+
+# Step 2: Project Structure
+
+Create a well-organized project structure:
+
+```
+project_name/
+├── agents/
+│   ├── __init__.py
+│   └── agent_definitions.py
+├── tasks/
+│   ├── __init__.py
+│   └── task_definitions.py
+├── tools/
+│   ├── __init__.py
+│   └── custom_tools.py
+└── crew.py
+```
+
+# Step 3: Agent Development
+
+To create effective agents, follow these guidelines:
+
+1. **Define Clear Roles**: Each agent should have a specific role and expertise:
+
+```python
+from crewai import Agent
+
+researcher = Agent(
+    role='Research Analyst',
+    goal='Conduct thorough research and analysis',
+    backstory='Experienced research analyst with expertise in data analysis',
+    verbose=True
+)
+```
+
+2. **Agent Parameters**:
+   - role: The agent's professional role
+   - goal: The agent's primary objective
+   - backstory: Context and expertise
+   - tools: List of tools available to the agent
+   - allow_delegation: Whether the agent can delegate tasks
+   - verbose: Enable detailed logging
+
+# Step 4: Task Creation
+
+Create well-defined tasks for your agents:
+
+```python
+from crewai import Task
+
+research_task = Task(
+    description='Conduct market research on [specific topic]',
+    agent=researcher,
+    context='Focus on market trends and competitor analysis',
+    expected_output='Detailed market analysis report'
+)
+```
+
+Task parameters:
+- description: Clear task description
+- agent: Assigned agent
+- context: Additional context or constraints
+- expected_output: Desired output format
+- tools: Specific tools for the task
+
+# Step 5: Tool Integration
+
+Create custom tools by extending CrewAI's tool system:
+
+```python
+from crewai import Tool
+
+custom_tool = Tool(
+    name='tool_name',
+    description='Tool description',
+    func=your_function
+)
+```
+
+# Step 6: Crew Assembly
+
+Create and configure your crew:
+
+```python
+from crewai import Crew
+
+crew = Crew(
+    agents=[agent1, agent2],
+    tasks=[task1, task2],
+    verbose=True
+)
+
+result = crew.kickoff()
+```
+
+Crew parameters:
+- agents: List of agents in the crew
+- tasks: List of tasks to be performed
+- verbose: Enable detailed logging
+
+# Step 7: Testing
+
+Test your crew implementation:
+1. Start with simple, isolated tasks
+2. Gradually increase complexity
+3. Monitor agent interactions
+4. Verify output quality
+5. Test error handling
+
+# Step 8: Best Practices
+
+1. **Agent Design**:
+   - Give agents specific, focused roles
+   - Provide clear, achievable goals
+   - Write detailed backstories
+   - Assign appropriate tools
+
+2. **Task Design**:
+   - Break down complex tasks
+   - Provide clear context
+   - Define expected outputs
+   - Set reasonable constraints
+
+3. **Tool Integration**:
+   - Create reusable tools
+   - Document tool usage
+   - Handle errors gracefully
+   - Test tool reliability
+
+4. **Crew Management**:
+   - Monitor agent interactions
+   - Optimize task sequences
+   - Handle failures gracefully
+   - Document crew behavior
+
+Remember to test thoroughly and iterate based on performance and user feedback.
