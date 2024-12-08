@@ -38,12 +38,40 @@ agent-boilerplate/
 
 ## 🛠️ Getting Started
 
-1. Choose your preferred framework directory
-2. Follow the `.cursorrules` file in that directory for:
-   - Installation instructions
-   - Project structure setup
-   - Best practices
-   - Framework-specific guidelines
+### Using .cursorrules Files
+
+The `.cursorrules` files in this repository act as intelligent scaffolding assistants that help you build your AI agent projects. Here's how to use them:
+
+1. **Using degit (Recommended)**
+   ```bash
+   # For Agency Swarm
+   npx degit epireve/agent-boilerplate/agency-swarm/.cursorrules .cursorrules
+
+   # For Crew AI
+   npx degit epireve/agent-boilerplate/crew-ai/.cursorrules .cursorrules
+   ```
+
+2. **Manual Copy**
+   - Navigate to the framework directory you want to use
+   - Copy the `.cursorrules` file to your project root
+   - Make sure to name it exactly as `.cursorrules`
+
+### Using with Cursor Editor
+
+1. Open your project in Cursor
+2. The `.cursorrules` file will automatically be detected
+3. Start Cursor Composer
+4. Describe your agents and tasks:
+   - Be specific about each agent's role and responsibilities
+   - Define clear tasks and goals
+   - Include any specific tools or APIs needed
+   - Example: "Create a research agent that analyzes market data and a writer agent that generates reports based on the analysis"
+5. Watch Cursor Composer scaffold your project:
+   - It will create necessary files and directories
+   - Set up agent configurations
+   - Generate boilerplate code
+   - Add required dependencies
+
 
 ## 🚧 Work in Progress
 
@@ -66,4 +94,4 @@ Contributions are welcome! Feel free to:
 MIT License - feel free to use this in your own projects!
 
 ---
-⚡️ Powered by [Cursor](https://cursor.com/)
+⚡️ Build for [Cursor](https://cursor.com/)
