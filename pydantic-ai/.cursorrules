@@ -1,0 +1,390 @@
+# AI Agent Creator Instructions for Pydantic AI Framework
+
+Pydantic AI is a powerful agent framework designed to make building production-grade applications with Generative AI less painful. Built by the Pydantic team, it brings the "FastAPI feeling" to GenAI app development. Your role is to help create robust AI agents using Pydantic AI's features:
+
+**Official Documentation**: https://ai.pydantic.dev/
+
+1. **Planning**: First, plan the agent structure, defining the models, validators, and tools needed based on user requirements.
+2. **Project Structure**: Create appropriate project structure following Pydantic AI best practices.
+3. **Model Development**: Create Pydantic models for structured inputs and outputs.
+4. **Agent Development**: Create type-safe agents with clear responsibilities.
+5. **Tool Integration**: Integrate necessary tools and APIs with proper validation.
+6. **Testing**: Implement comprehensive testing using the dependency injection system.
+7. **Iteration**: Refine the implementation based on user feedback.
+
+# Step 1: Project Setup
+
+## Python Version Requirements
+
+Pydantic AI requires Python 3.9+. Check your version:
+
+```bash
+python --version
+```
+
+## Installation
+
+1. **Create a new project directory**:
+   ```bash
+   mkdir my_pydantic_ai_project
+   cd my_pydantic_ai_project
+   ```
+
+2. **Set up a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install Pydantic AI**:
+   
+   Basic installation:
+   ```bash
+   pip install pydantic-ai
+   ```
+   
+   Using UV (alternative package installer):
+   ```bash
+   uv add pydantic-ai
+   ```
+
+### Use with Pydantic Logfire
+
+Pydantic AI has an excellent (but optional) integration with Pydantic Logfire to help you view and understand agent runs:
+
+```bash
+pip install 'pydantic-ai[logfire]'
+```
+
+or with UV:
+```bash
+uv add 'pydantic-ai[logfire]'
+```
+
+Follow the [Logfire setup docs](https://docs.logfire.dev/) to configure Logfire.
+
+### Running Examples
+
+To install the examples package:
+
+```bash
+pip install 'pydantic-ai[examples]'
+```
+
+or with UV:
+```bash
+uv add 'pydantic-ai[examples]'
+```
+
+See the [examples documentation](https://ai.pydantic.dev/examples/) for details.
+
+### Slim Installation
+
+If you only need specific models, use the slim installation with required dependencies:
+
+```bash
+pip install 'pydantic-ai-slim[openai]'  # Just for OpenAI
+```
+
+Available optional groups:
+- `logfire` — installs logfire
+- `openai` — installs OpenAI package
+- `vertexai` — installs Google Auth and requests
+- `anthropic` — installs Anthropic package
+- `groq` — installs Groq package
+- `mistral` — installs Mistral AI package
+- `cohere` — installs Cohere package
+- `duckduckgo` — installs DuckDuckGo search package
+- `tavily` — installs Tavily Python package
+
+You can install multiple dependencies:
+```bash
+pip install 'pydantic-ai-slim[openai,vertexai,logfire]'
+```
+
+## Project Structure
+
+Create a well-organized project structure:
+
+```
+my_pydantic_ai_project/
+├── pyproject.toml
+├── README.md
+├── .env
+├── src/
+│   └── my_project/
+│       ├── __init__.py
+│       ├── models/
+│       │   ├── __init__.py
+│       │   ├── inputs.py
+│       │   └── outputs.py
+│       ├── agents/
+│       │   ├── __init__.py
+│       │   └── base.py
+│       ├── tools/
+│       │   ├── __init__.py
+│       │   └── custom_tools.py
+│       └── validators/
+│           ├── __init__.py
+│           └── response_validators.py
+└── tests/
+    ├── __init__.py
+    ├── conftest.py
+    └── test_agents/
+        └── __init__.py
+```
+
+# Step 2: Model Development
+
+Pydantic AI uses Pydantic models for structured inputs and outputs. Follow these guidelines:
+
+1. **Define Input Models**:
+```python
+from pydantic import BaseModel, Field
+from typing import Optional
+
+class UserQuery(BaseModel):
+    query: str = Field(..., description="The user's input query")
+    context: Optional[str] = Field(None, description="Additional context")
+```
+
+2. **Define Output Models**:
+```python
+from pydantic import BaseModel, Field
+from typing import List
+
+class AgentResponse(BaseModel):
+    answer: str = Field(..., description="The agent's response")
+    confidence: float = Field(..., ge=0, le=1, description="Confidence score")
+    sources: List[str] = Field(default_factory=list, description="Source references")
+```
+
+For more details on model development, refer to: https://ai.pydantic.dev/models/
+
+# Step 3: Agent Development
+
+Create type-safe agents using Pydantic AI's agent system:
+
+1. **Basic Agent Structure**:
+```python
+from pydantic_ai import Agent, Tool
+from pydantic import BaseModel
+
+class MyAgent(Agent):
+    """An agent that performs specific tasks."""
+    
+    def __init__(self, model_name: str = "gpt-4"):
+        super().__init__(
+            name="MyAgent",
+            description="Agent description",
+            model_name=model_name,
+            tools=[],  # List of tools
+            validators=[]  # List of validators
+        )
+```
+
+2. **Agent Configuration**:
+- name: Descriptive name for the agent
+- description: Clear description of agent's purpose
+- model_name: LLM model to use
+- tools: List of available tools
+- validators: Response validators
+
+For more details on agent development, refer to: https://ai.pydantic.dev/agents/
+
+# Step 4: Tool Development
+
+Create tools that agents can use:
+
+```python
+from pydantic_ai import Tool
+from pydantic import BaseModel, Field
+
+class SearchInput(BaseModel):
+    query: str = Field(..., description="Search query")
+    max_results: int = Field(default=5, ge=1, le=10)
+
+class SearchOutput(BaseModel):
+    results: List[str] = Field(..., description="Search results")
+    total_found: int = Field(..., ge=0)
+
+class SearchTool(Tool[SearchInput, SearchOutput]):
+    name = "search"
+    description = "Search for information"
+    
+    def run(self, input: SearchInput) -> SearchOutput:
+        # Implementation
+        pass
+```
+
+For more details on tool development, refer to: https://ai.pydantic.dev/function-tools/
+
+# Step 5: Response Validation
+
+Implement validators to ensure quality responses:
+
+```python
+from pydantic_ai import ResponseValidator
+from pydantic import BaseModel
+
+class MyValidator(ResponseValidator):
+    def validate(self, response: str) -> bool:
+        # Validation logic
+        return True
+```
+
+# Step 6: Dependency Injection
+
+Use dependency injection for testing and development:
+
+```python
+from pydantic_ai import Depends, Service
+
+class MyService(Service):
+    async def get_data(self) -> str:
+        return "data"
+
+class MyAgent(Agent):
+    def __init__(self, service: MyService = Depends(MyService)):
+        self.service = service
+        super().__init__()
+```
+
+For more details on dependency injection, refer to: https://ai.pydantic.dev/dependencies/
+
+# Step 7: Testing
+
+Implement comprehensive tests:
+
+```python
+import pytest
+from pydantic_ai import TestClient
+
+def test_agent_response():
+    agent = MyAgent()
+    client = TestClient(agent)
+    
+    response = client.invoke(
+        "test query",
+        mock_services={
+            MyService: MockService()
+        }
+    )
+    
+    assert response.status == "success"
+```
+
+For more details on testing, refer to: https://ai.pydantic.dev/testing-and-evals/
+
+# Best Practices
+
+1. **Type Safety**:
+   - Use type hints consistently
+   - Leverage Pydantic's validation
+   - Define clear input/output models
+
+2. **Model Design**:
+   - Keep models focused and single-purpose
+   - Use descriptive field names
+   - Add field descriptions
+   - Set appropriate validators
+
+3. **Agent Design**:
+   - Give agents specific responsibilities
+   - Use appropriate LLM models
+   - Implement proper error handling
+   - Add comprehensive logging
+
+4. **Tool Development**:
+   - Create reusable tools
+   - Add proper documentation
+   - Handle errors gracefully
+   - Validate inputs and outputs
+
+5. **Testing**:
+   - Write unit tests for models
+   - Test agents with mock services
+   - Validate response quality
+   - Test error scenarios
+
+6. **Production Readiness**:
+   - Use proper error handling
+   - Implement retry mechanisms
+   - Add monitoring and logging
+   - Handle rate limiting
+   - Secure API keys and secrets
+
+Remember to:
+- Keep agents focused and single-purpose
+- Use type hints consistently
+- Add comprehensive documentation
+- Implement proper error handling
+- Test thoroughly
+- Monitor performance in production
+
+# Common Patterns
+
+1. **Chain of Responsibility**:
+```python
+class ChainedAgent(Agent):
+    def __init__(self, next_agent: Optional[Agent] = None):
+        self.next = next_agent
+        super().__init__()
+```
+
+2. **Composite Pattern**:
+```python
+class CompositeAgent(Agent):
+    def __init__(self, agents: List[Agent]):
+        self.agents = agents
+        super().__init__()
+```
+
+3. **Factory Pattern**:
+```python
+class AgentFactory:
+    @staticmethod
+    def create_agent(agent_type: str) -> Agent:
+        # Agent creation logic
+        pass
+```
+
+# Error Handling
+
+Implement proper error handling:
+
+```python
+from pydantic_ai import AgentError
+
+class MyAgent(Agent):
+    async def process(self, input: str) -> str:
+        try:
+            result = await self._process(input)
+            return result
+        except Exception as e:
+            raise AgentError(f"Processing failed: {str(e)}")
+```
+
+# Monitoring and Logging
+
+Use Pydantic Logfire for monitoring:
+
+```python
+from pydantic_ai import setup_logging
+
+setup_logging(
+    service_name="my_agent",
+    environment="production"
+)
+```
+
+For more details on monitoring and debugging, refer to: https://ai.pydantic.dev/debugging-and-monitoring/
+
+# Additional Resources
+
+- Official Documentation: https://ai.pydantic.dev/
+- GitHub Repository: https://github.com/pydantic/pydantic-ai
+- API Reference: https://ai.pydantic.dev/api-reference/
+- Examples: https://ai.pydantic.dev/examples/
+
+Remember to test thoroughly and iterate based on performance and user feedback. 
