@@ -25,6 +25,16 @@ Currently, this repository includes templates for:
 - YAML-based configuration for agents and tasks
 - Structured workflow orchestration
 
+### [Pydantic AI](https://ai.pydantic.dev)
+- Type-safe agent framework built by the Pydantic team
+- Python-centric design with structured Pydantic models
+- Dependency injection system for testing and development
+
+### [smolagents](https://github.com/huggingface/smolagents)
+- Lightweight library from Hugging Face (~1,000 lines of code)
+- First-class support for code-based agents
+- Model-agnostic with support for local, HF, OpenAI, and others
+
 ## 📁 Repository Structure
 
 ```
@@ -33,6 +43,10 @@ agent-boilerplate/
 │   └── .cursorrules       # Agency Swarm guidelines and setup
 ├── crew-ai/
 │   └── .cursorrules       # Crew AI guidelines and setup
+├── pydantic-ai/
+│   └── .cursorrules       # Pydantic AI guidelines and setup
+├── smolagents/
+│   └── .cursorrules       # smolagents guidelines and setup
 └── README.md
 ```
 
@@ -49,6 +63,12 @@ The `.cursorrules` files in this repository act as intelligent scaffolding assis
 
    # For Crew AI
    npx degit epireve/agent-boilerplate/crew-ai/.cursorrules .cursorrules
+   
+   # For Pydantic AI
+   npx degit epireve/agent-boilerplate/pydantic-ai/.cursorrules .cursorrules
+   
+   # For smolagents
+   npx degit epireve/agent-boilerplate/smolagents/.cursorrules .cursorrules
    ```
 
 2. **Manual Copy**
